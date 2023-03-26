@@ -30,20 +30,23 @@ app.post("/login",(req,res)=>{
 
 app.post("/cotable",(req,res)=>{
     console.log(req.body)
-   // const count=req.body.tableData.length;
-   // console.log(count)
+    const count=req.body.tableData.length;
+    console.log(count)
     const tableData=req.body.tableData;
-    console.log(`INSERT INTO 'co_table' (courseid,co_id,co_type) VALUES ('${req.body.courseid}','${tableData[0].co_id}','${tableData[0].co_type}')`)
-    const sql=`INSERT INTO co_table (courseid,co_id,co_type) VALUES ('${req.body.courseid}','${tableData[0].co_id}','${tableData[0].co_type}')`;
-     db.query(sql,(err,data)=>{
-        if(err) return res.json("error");     
-        return res.json("data enter succesfuly");
-    })
+    console.log(`INSERT INTO 'co_table' (courseid,co_id,co_type) VALUES ('?,?,?)`)
+
+    const sql=`INSERT INTO co_table (courseid,co_id,co_type) VALUES (?,?,?)`;
+    tableData.forEach(item => {
+        db.query(sql, [item.courseid, item.co_id,item.co_type], (err, result) => {
+          if (err) throw err;
+          console.log(`${item.co_id} inserted successfully`);
+        });
+      });
+    
 })
 
 app.post("/registercourse",(req,res)=>{
     const sql ="INSERT INTO `course` (courseid, co_count, student_count) VALUES (?,?,?);" ;
-
     db.query(sql,[req.body.courseid,req.body.co_count,req.body.student_count],(err,data)=>{
      if(err) return res.json("error");
         return res.json("data entered succesfully");
@@ -51,15 +54,24 @@ app.post("/registercourse",(req,res)=>{
  });
 
 app.post("/student_table",(req,res)=>{
-    //const data=req.body.tableData;    
-    const sql="INSERT INTO student_table (courseid,student_id,student_name) VALUES (? ? ?)";
-    db.query(sql,[req.body.courseid,data],(err,data)=>{
-        if(err) return res.json("error");
-    })
+    const tableData=req.body.tableData1;
+    console.log(`INSERT INTO 'co_table' (courseid,student_id,student_name) VALUES (?,?,?)`)
+
+    const sql=`INSERT INTO student_table (courseid,student_id,student_name) VALUES (?,?,?)`;
+    
+    tableData.forEach(item => {
+        db.query(sql, [item.courseid, item.student_id,item.student_name], (err, result) => {
+          if (err) throw err;
+          console.log(`${item.student_id} inserted successfully`);
+        });
+      });
+    
+  
+
 });
 
 
 app.listen(4000,()=>{
-    console.log("server is running on port 5000");
+    console.log("server is running on port 4000");
 })
 
